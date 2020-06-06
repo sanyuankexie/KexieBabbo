@@ -48,6 +48,8 @@ class ActivityAttendance : AppCompatActivity() {
                 refresh()
             }
         }.start()
+
+        refresh()
     }
 
     fun refreshLogIn(status: SignAgent.UserStatus) {
