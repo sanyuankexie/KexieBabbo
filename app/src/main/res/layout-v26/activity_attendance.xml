@@ -22,14 +22,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
-        app:layout_constraintTop_toBottomOf="@id/top_div">
+        app:layout_constraintTop_toBottomOf="@id/top_div"
+        android:padding="10dp">
 
         <LinearLayout
             android:id="@+id/topFiveList_linearLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:isScrollContainer="true"
-            android:layout_marginBottom="10dp"
             android:background="@color/colorPrimaryDark"
             android:orientation="horizontal">
         </LinearLayout>
@@ -41,7 +41,7 @@
         android:layout_height="100dp"
         android:autoSizeTextType="uniform"
         android:gravity="center"
-        android:text="00:00"
+        android:text="长按进行签到"
         android:textColor="@color/colorPrimaryDark"
         app:layout_constraintTop_toBottomOf="@+id/topFive_scrollView"
         tools:layout_editor_absoluteX="0dp" />
