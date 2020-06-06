@@ -43,6 +43,11 @@ class SignAgent {
 
     fun signOut(id: Long): Boolean = postSignOut(id).body!!.string().contains("成功")
 
+    fun postComplaint(id: Long) =
+        post(R.serviceAddress + R.div + R.complaintAPIName, "{\"userId\":\"$id\"}")
+
+    fun complaint(id: Long) = postComplaint(id).body!!.string().contains("成功")
+
     private fun getAttendancesResponse() = get(R.serviceAddress + R.div + R.attendancesListAPIName)
 
     private fun getTopFiveAttendancesResponse() =
@@ -63,7 +68,7 @@ class SignAgent {
             pos_end = response.indexOf("\",\"", pos_start)
             val location = response.substring(pos_start, pos_end)
 
-            pos_start = response.indexOf("userid\":", pos_end) + 9
+            pos_start = response.indexOf("userid\":", pos_end) + 8
             pos_end = response.indexOf(",\"", pos_start)
             val userid = response.substring(pos_start, pos_end)
 
@@ -82,7 +87,7 @@ class SignAgent {
         var pos_start = 0
         var pos_end = 0
         while (true) {
-            pos_start = response.indexOf("userid\":", pos_end) + 9
+            pos_start = response.indexOf("userid\":", pos_end) + 8
             if (pos_start <= pos_end || pos_start == -1) break
             pos_end = response.indexOf(",\"", pos_start)
             val userid = response.substring(pos_start, pos_end)
@@ -138,4 +143,5 @@ fun main() {
 //    println(agent.signIn("1900420217"))
 //    println(agent.getAttendanceList()[0])
 //    println(agent.getTopFiveAttendanceList()[1])
+//    println(agent.postComplaint(1900420217).body!!.string())
 }

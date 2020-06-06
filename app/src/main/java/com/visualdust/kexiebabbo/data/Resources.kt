@@ -21,5 +21,7 @@ class Resources {
         const val complaintAPIName = "Complaint"
         const val attendancesListAPIName = ""
         const val rankTopFiveAttendanceAPIName = "TopFive"
+
+        var userID :Long = -266555
     }
 }

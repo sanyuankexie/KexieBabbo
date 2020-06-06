@@ -13,6 +13,24 @@
         android:foreground="@color/colorPrimaryDark"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <HorizontalScrollView
+        android:id="@+id/topFive_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintTop_toBottomOf="@id/top_div">
+
+        <LinearLayout
+            android:id="@+id/topFiveList_linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:isScrollContainer="true"
+            android:layout_marginBottom="10dp"
+            android:background="@color/colorPrimaryDark"
+            android:orientation="horizontal">
+        </LinearLayout>
+    </HorizontalScrollView>
+
     <TextView
         android:id="@+id/dailyTimer_textView"
         android:layout_width="match_parent"
@@ -21,7 +39,7 @@
         android:gravity="center"
         android:text="00:00"
         android:textColor="@color/colorPrimaryDark"
-        app:layout_constraintTop_toBottomOf="@+id/top_div"
+        app:layout_constraintTop_toBottomOf="@+id/topFive_scrollView"
         tools:layout_editor_absoluteX="0dp" />
 
     <ScrollView
@@ -31,7 +49,7 @@
         android:layout_marginBottom="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        app:layout_constraintBottom_toTopOf="@id/topFive_scrollView"
+        app:layout_constraintBottom_toTopOf="@id/bottom_bar"
         app:layout_constraintTop_toBottomOf="@id/dailyTimer_textView">
 
         <GridLayout
@@ -41,26 +59,8 @@
             android:layout_gravity="center"
             android:columnCount="4"
             android:isScrollContainer="true">
-
         </GridLayout>
     </ScrollView>
-
-    <HorizontalScrollView
-        android:id="@+id/topFive_scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/bottom_bar">
-
-        <LinearLayout
-            android:id="@+id/topFiveList_linearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:isScrollContainer="true"
-            android:orientation="horizontal">
-
-        </LinearLayout>
-    </HorizontalScrollView>
 
     <LinearLayout
         android:id="@+id/bottom_bar"
@@ -81,6 +81,7 @@
             android:textColor="@color/colorWhitePure" />
 
         <ProgressBar
+            android:id="@+id/signInTime_ProcessBar"
             style="@android:style/Widget.ProgressBar.Horizontal"
             android:layout_width="match_parent"
             android:layout_height="10dp"

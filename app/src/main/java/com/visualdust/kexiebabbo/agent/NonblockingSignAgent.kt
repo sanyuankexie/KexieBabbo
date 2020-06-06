@@ -17,12 +17,24 @@ class NonblockingSignAgent {
         consumer.accept(agent.signOut(id))
     }.start()
 
+    fun handleComplaintResponse(id: Long, consumer: Consumer<Response>) = Thread {
+        consumer.accept(agent.postComplaint(id))
+    }.start()
+
+    fun handleComplaint(id: Long, consumer: Consumer<Boolean>) = Thread {
+        consumer.accept(agent.complaint(id))
+    }.start()
+
     fun handleSignOutResponse(id: Long, consumer: Consumer<Response>) = Thread {
         consumer.accept(agent.postSignOut(id))
     }.start()
 
     fun handleAttendance(consumer: Consumer<ArrayList<SignAgent.Attendance>>) = Thread {
         consumer.accept(agent.getAttendanceList())
+    }.start()
+
+    fun handleStatus(id: Long, consumer: Consumer<SignAgent.UserStatus>) = Thread {
+        consumer.accept(agent.getStatus(id))
     }.start()
 
     fun handleTopFives(consumer: Consumer<ArrayList<SignAgent.Attendance>>) = Thread {

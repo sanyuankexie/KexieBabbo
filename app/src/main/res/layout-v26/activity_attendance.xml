@@ -6,12 +6,34 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <View
+    <TextView
         android:id="@+id/top_div"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:foreground="@color/colorPrimaryDark"
+        android:layout_height="wrap_content"
+        android:text="TopRankers"
+        android:textSize="20dp"
+        android:textColor="@color/colorWhitePure"
+        android:background="@color/colorPrimaryDark"
+        android:padding="10dp"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <HorizontalScrollView
+        android:id="@+id/topFive_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintTop_toBottomOf="@id/top_div">
+
+        <LinearLayout
+            android:id="@+id/topFiveList_linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:isScrollContainer="true"
+            android:layout_marginBottom="10dp"
+            android:background="@color/colorPrimaryDark"
+            android:orientation="horizontal">
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <TextView
         android:id="@+id/dailyTimer_textView"
@@ -21,7 +43,7 @@
         android:gravity="center"
         android:text="00:00"
         android:textColor="@color/colorPrimaryDark"
-        app:layout_constraintTop_toBottomOf="@+id/top_div"
+        app:layout_constraintTop_toBottomOf="@+id/topFive_scrollView"
         tools:layout_editor_absoluteX="0dp" />
 
     <ScrollView
@@ -31,79 +53,49 @@
         android:layout_marginBottom="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        app:layout_constraintBottom_toTopOf="@id/topFive_scrollView"
+        app:layout_constraintBottom_toTopOf="@id/bottom_bar"
         app:layout_constraintTop_toBottomOf="@id/dailyTimer_textView">
 
         <GridLayout
             android:id="@+id/attendanceList_gridLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+                android:layout_height="match_parent"
             android:layout_gravity="center"
             android:columnCount="4"
             android:isScrollContainer="true">
-
         </GridLayout>
     </ScrollView>
-
-    <HorizontalScrollView
-        android:id="@+id/topFive_scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/bottom_bar">
-
-        <LinearLayout
-            android:id="@+id/topFiveList_linearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:isScrollContainer="true"
-            android:orientation="horizontal">
-
-        </LinearLayout>
-    </HorizontalScrollView>
 
     <LinearLayout
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
-        android:orientation="horizontal"
-        android:padding="10dp"
+        android:orientation="vertical"
+        android:paddingLeft="10dp"
+        android:paddingTop="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/timeDescrip_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="1">
+            android:text="本周已签到0/0分钟"
+            android:textColor="@color/colorWhitePure" />
 
-            <TextView
-                android:id="@+id/signInTime_textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="本周已签到0/0分钟"
-                android:textColor="@color/colorWhitePure" />
+        <ProgressBar
+            android:id="@+id/signInTime_ProcessBar"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
+            android:max="1080"
+            android:progress="1080"
+            android:progressDrawable="@drawable/progressbar" />
 
-            <ProgressBar
-                android:id="@+id/signInTime_ProcessBar"
-                style="@android:style/Widget.ProgressBar.Horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="10dp"
-                android:max="1080"
-                android:progress="1080"
-                android:progressDrawable="@drawable/progressbar" />
-
-        </LinearLayout>
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="thumb"
-            android:src="@drawable/ic_thumb_up_white_64dp"
-            android:background="#000000FF"
-            android:layout_marginLeft="20dp"
-            android:scaleType="centerInside"
-            android:layout_weight="1"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
