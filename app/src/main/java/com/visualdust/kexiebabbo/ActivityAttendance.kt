@@ -36,7 +36,7 @@ class ActivityAttendance : AppCompatActivity() {
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
         timer.setOnLongClickListener {
-            if (timer.text == "长按进行签到" || timer.text == "0")
+            if (timer.text == "长按这段文字进行签到" || timer.text == "0")
                 refreshLogIn(SignAgent.UserStatus.ONLINE)
             else refreshLogIn(SignAgent.UserStatus.OFFLINE)
             true
@@ -53,7 +53,7 @@ class ActivityAttendance : AppCompatActivity() {
     fun refreshLogIn(status: SignAgent.UserStatus) {
         if (status == SignAgent.UserStatus.OFFLINE) {
             nbAgent.handleSignOut(VDR.userID, Consumer {
-                timer.text = "长按进行签到"
+                timer.text = "长按这段文字进行签到"
                 progressBar.progress = 0
                 timeDesrip.text = "本周已签到0分钟，还需要1080分钟"
             })
