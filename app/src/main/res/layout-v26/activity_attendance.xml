@@ -67,27 +67,43 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimaryDark"
-        android:orientation="vertical"
-        android:paddingLeft="10dp"
-        android:paddingTop="10dp"
-        android:paddingRight="10dp"
-        android:paddingBottom="10dp"
+        android:orientation="horizontal"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="本周已签到0/0分钟"
-            android:textColor="@color/colorWhitePure" />
+            android:orientation="vertical"
+            android:layout_weight="1">
 
-        <ProgressBar
-            style="@android:style/Widget.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            android:max="1080"
-            android:progress="1080"
-            android:progressDrawable="@drawable/progressbar" />
+            <TextView
+                android:id="@+id/signInTime_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="本周已签到0/0分钟"
+                android:textColor="@color/colorWhitePure" />
 
+            <ProgressBar
+                android:id="@+id/signInTime_ProcessBar"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:max="1080"
+                android:progress="1080"
+                android:progressDrawable="@drawable/progressbar" />
+
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="thumb"
+            android:src="@drawable/ic_thumb_up_white_64dp"
+            android:background="#000000FF"
+            android:layout_marginLeft="20dp"
+            android:scaleType="centerInside"
+            android:layout_weight="1"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

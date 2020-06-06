@@ -10,6 +10,7 @@ class Resources {
         const val serviceProtocolPrefix = "http://"
         const val div = "/"
         const val projectSpace = "kexie"
+        const val appName = "kexieBabbo"
         const val serviceAddress =
             "$serviceProtocolPrefix$serviceIP:$servicePort$div$projectSpace"
 
