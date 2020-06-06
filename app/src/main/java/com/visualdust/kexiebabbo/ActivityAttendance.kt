@@ -34,10 +34,6 @@ class ActivityAttendance : AppCompatActivity() {
         progressBar = findViewById<ProgressBar>(R.id.signInTime_ProcessBar)
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
-        nbAgent.handleStatus(VDR.userID, Consumer {
-
-        })
-
         timer.setOnLongClickListener {
             if (timer.text == "长按进行签到" || timer.text == "0")
                 refreshLogIn(SignAgent.UserStatus.ONLINE)
