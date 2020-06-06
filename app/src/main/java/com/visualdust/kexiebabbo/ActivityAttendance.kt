@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -36,7 +35,7 @@ class ActivityAttendance : AppCompatActivity() {
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
         timer.setOnLongClickListener {
-            if (timer.text == "长按这段文字进行签到" || timer.text == "0")
+            if (timer.text == "长按这段文字进行签到" || timer.text == "签到失败" || timer.text == "0")
                 refreshLogIn(SignAgent.UserStatus.ONLINE)
             else refreshLogIn(SignAgent.UserStatus.OFFLINE)
             true
@@ -61,36 +60,25 @@ class ActivityAttendance : AppCompatActivity() {
         } else {
             nbAgent.handleSignOut(VDR.userID, Consumer {
                 nbAgent.handleSignInResponse(VDR.userID, Consumer {
+                    var pos_start = 0
+                    var pos_end = 0
                     val response = it.body!!.string()
-                    val code_start = response.indexOf("code\":") + 6
-                    val code_end = response.indexOf(",\"", code_start)
-                    val code = response.substring(code_start, code_end)
-                    val time_start = response.indexOf("allTime\":") + 9
-                    val time_end = response.indexOf(",\"", time_start)
-                    val time = (response.substring(time_start, time_end).toDouble() * 60.0)
-                    if (code == "500") {
-                        runOnUiThread{Toast.makeText(this, "你号没了！！！！", Toast.LENGTH_SHORT).show()}
-                    }
-                    else{
-                        val username_start = response.indexOf("username\":") + 11
-                        val username_end = response.indexOf(",\"", username_start)
-                        val school_number_start = response.indexOf("userid\":") + 8
-                        val school_number_end = response.indexOf(",\"", school_number_start)
-                        val status_start = response.indexOf("message\":") + 8
-                        val status_end = response.indexOf(",\"", status_start)
-
-                        val status = response.substring(status_start, status_end)
-                        val school_number = response.substring(school_number_start, school_number_end)
-                        val username = response.substring(username_start, username_end)
-                        if (code == "200" && status == "签到成功") {
-                            Toast.makeText(this, school_number + username + status , Toast.LENGTH_SHORT).show()
-                        }
-                        else if(code == "200" && status == "签退成功"){
-                            Toast.makeText(this, school_number + username + status , Toast.LENGTH_SHORT).show()
-                        }
-                        else{
-                            runOnUiThread{Toast.makeText(this, "你号没了！！", Toast.LENGTH_SHORT).show()}
-                        }
+                    pos_start = response.indexOf("code\":") + 6
+                    pos_end = response.indexOf(",\"", pos_start)
+                    val code = response.substring(pos_start, pos_end)
+                    pos_start = response.indexOf("allTime\":") + 9
+                    pos_end = response.indexOf(",\"", pos_start)
+                    val time = (response.substring(pos_start, pos_end).toDouble() * 60.0)
+                    if (response.contains("签到成功"))
+                        runOnUiThread { Toast.makeText(this, "签到成功", Toast.LENGTH_SHORT).show() }
+                    else if (response.contains("签退成功"))
+                        runOnUiThread { Toast.makeText(this, "签退成功", Toast.LENGTH_SHORT).show() }
+                    else runOnUiThread {
+                        Toast.makeText(
+                            this,
+                            "操作失败 : $response",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     runOnUiThread {
                         timer.text = "${time.toInt()}"
