@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         val pref = getSharedPreferences("school_number", Context.MODE_PRIVATE)
         val school_number = pref.getInt("school_number", 0)
         if (school_number != 0){
-            ed_school_number.setText(school_number.toString())
+            ed_school_number.setText(school_number)
         }
 
         button.setOnClickListener {
@@ -32,8 +32,9 @@ class MainActivity : AppCompatActivity() {
             editor.apply()
             if (text.length == 10)
             {
+
                 Resources.userID = text.toLong()
-                editor.putInt("school_number", text.toInt())
+                editor.putLong("school_number", text.toLong())
                 editor.apply()
                 val intent = Intent(this, ActivityAttendance::class.java)
                 startActivity(intent)
