@@ -129,6 +129,12 @@ class ActivityAttendance : AppCompatActivity() {
                             .show()
                         true
                     }
+
+                when (member.location) {
+                    "5108" -> bt.setTextColor(getColor(R.color.room5108bg))
+                    "5102" -> bt.setTextColor(getColor(R.color.room5102bg))
+                    "5109" -> bt.setTextColor(getColor(R.color.room5109bg))
+                }
                 bt.setOnClickListener {
                     popupMenu.show()
                 }
@@ -139,6 +145,7 @@ class ActivityAttendance : AppCompatActivity() {
             runOnUiThread { topFiveListLinearLayout.removeAllViews() }
             for (ranker in it) {
                 val bt = Button(this)
+                bt.setTextColor(getColor(R.color.colorAccent))
                 bt.setText("${ranker.name} ${ranker.time.toInt()}分钟")
                 runOnUiThread { topFiveListLinearLayout.addView(bt) }
             }
