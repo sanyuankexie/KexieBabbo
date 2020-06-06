@@ -6,7 +6,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import com.visualdust.kexiebabbo.data.Resources as R
 
-class SignMachine {
+class SignAgent {
     private val client = OkHttpClient()
 
     class Attendance(
@@ -21,28 +21,32 @@ class SignMachine {
         }
     }
 
-    private fun post(url: String, json: String): Response = client.newCall(
-        Request.Builder().url(url).post(json.toRequestBody(R.JsonType)).build()
-    ).execute()
+    enum class UserStatus {
+        ONLINE, OFFLINE
+    }
 
+    private fun post(url: String, body: String): Response = client.newCall(
+        Request.Builder().url(url).post(body.toRequestBody(R.JsonType)).build()
+    ).execute()
 
     private fun get(url: String): Response = client.newCall(
         Request.Builder().url(url).get().build()
     ).execute()
 
-    private fun postSignIn(id: String) =
+    fun postSignIn(id: Long) =
         post(R.serviceAddress + R.div + R.signInAPIName, "{\"userId\":\"$id\"}")
 
-    fun signIn(id: String): Boolean = postSignIn(id).body!!.string().contains("成功")
+    fun signIn(id: Long): Boolean = postSignIn(id).body!!.string().contains("成功")
 
-    private fun postSignOut(id: String) =
+    fun postSignOut(id: Long) =
         post(R.serviceAddress + R.div + R.signOutAPIName, "{\"userId\":\"$id\"}")
 
-    fun signOut(id: String): Boolean = postSignOut(id).body!!.string().contains("成功")
+    fun signOut(id: Long): Boolean = postSignOut(id).body!!.string().contains("成功")
 
     private fun getAttendancesResponse() = get(R.serviceAddress + R.div + R.attendancesListAPIName)
 
-    private fun getTopFiveAttendancesResponse() = get(R.serviceAddress + R.div + R.rankTopFiveAttendanceAPIName)
+    private fun getTopFiveAttendancesResponse() =
+        get(R.serviceAddress + R.div + R.rankTopFiveAttendanceAPIName)
 
     fun getAttendanceList(): ArrayList<Attendance> {
         val response = getAttendancesResponse().body!!.string()
@@ -112,19 +116,25 @@ class SignMachine {
         return topFiveAttendanceList
     }
 
+    fun getStatus(id: Long): UserStatus {
+        if (getAttendancesResponse().body!!.string().contains(id.toString()))
+            return UserStatus.ONLINE
+        return UserStatus.OFFLINE
+    }
+
     private constructor()
 
     companion object {
-        private val signMachine = SignMachine()
+        private val signMachine = SignAgent()
 
         @JvmStatic
-        fun getMachine() = signMachine
+        fun getAgent() = signMachine
     }
 }
 
 fun main() {
-    val agent = SignMachine.getMachine()
-//    println(agent.signOut("1900420217"))
+    val agent = SignAgent.getAgent()
+    println(agent.signIn(1900420217))
 //    println(agent.signIn("1900420217"))
 //    println(agent.getAttendanceList()[0])
 //    println(agent.getTopFiveAttendanceList()[1])

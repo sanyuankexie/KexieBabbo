@@ -24,60 +24,42 @@
         app:layout_constraintTop_toBottomOf="@+id/top_div"
         tools:layout_editor_absoluteX="0dp" />
 
-    <HorizontalScrollView
+    <ScrollView
         android:id="@+id/attendanceList_scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginBottom="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        app:layout_constraintBottom_toTopOf="@id/bottom_bar"
+        app:layout_constraintBottom_toTopOf="@id/topFive_scrollView"
         app:layout_constraintTop_toBottomOf="@id/dailyTimer_textView">
 
         <GridLayout
+            android:id="@+id/attendanceList_gridLayout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:isScrollContainer="true"
-            android:layout_gravity="center">
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="name" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="name" />
-
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="name" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="name" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_row="1"
-                android:layout_column="0"
-                android:text="name" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="name" />
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="name" />
-
-
+            android:layout_gravity="center"
+            android:columnCount="4"
+            android:isScrollContainer="true">
 
         </GridLayout>
+    </ScrollView>
+
+    <HorizontalScrollView
+        android:id="@+id/topFive_scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/bottom_bar">
+
+        <LinearLayout
+            android:id="@+id/topFiveList_linearLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:isScrollContainer="true"
+            android:orientation="horizontal">
+
+        </LinearLayout>
     </HorizontalScrollView>
 
     <LinearLayout
