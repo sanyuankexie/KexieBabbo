@@ -6,5 +6,5 @@ For insiders' use only
 
 > 如果有什么改动的地方请在以下的日志处添加。格式为 具体日期+内容
 
-- 2020.6.6 从[@VisualDust](https://github.com/visualDust/KexieBabbo)那fork过来
+- 2020.6.6 从`[@VisualDust](https://github.com/visualDust/KexieBabbo)`那fork过来
 - 
