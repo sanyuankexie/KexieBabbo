@@ -10,7 +10,7 @@
         android:id="@+id/top_div"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:padding="10dp"
         android:text="TopRankers"
         android:textColor="@color/colorWhitePure"
@@ -21,7 +21,7 @@
         android:id="@+id/topFive_scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
+        android:background="@color/colorPrimary"
         android:padding="10dp"
         app:layout_constraintTop_toBottomOf="@id/top_div">
 
@@ -29,9 +29,8 @@
             android:id="@+id/topFiveList_linearLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimaryDark"
             android:isScrollContainer="true"
-            android:orientation="horizontal"></LinearLayout>
+            android:orientation="horizontal" />
     </HorizontalScrollView>
 
     <TextView
@@ -40,8 +39,11 @@
         android:layout_height="100dp"
         android:autoSizeTextType="uniform"
         android:gravity="center"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp"
         android:text="长按进行签到"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorPrimary"
         app:layout_constraintTop_toBottomOf="@+id/topFive_scrollView"
         tools:layout_editor_absoluteX="0dp" />
 
@@ -50,8 +52,11 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="10dp"
+        android:paddingStart="5dp"
         android:paddingLeft="10dp"
+        android:paddingEnd="5dp"
         android:paddingRight="10dp"
+        android:scrollbars="none"
         app:layout_constraintBottom_toTopOf="@id/bottom_bar"
         app:layout_constraintTop_toBottomOf="@id/dailyTimer_textView">
 
@@ -70,7 +75,7 @@
         android:id="@+id/bottom_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorPrimaryDark"
         android:orientation="vertical"
         android:paddingLeft="10dp"
         android:paddingTop="10dp"

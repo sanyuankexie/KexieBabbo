@@ -6,6 +6,7 @@
     <color name="colorWhitePure">#FFFFFF</color>
     <color name="colorGrey">#828282</color>
     <color name="colorGreyDark">#3F3F3F</color>
+    <color name="colorBackgroundDark">#1C3A7C</color>
 
     <color name="room5102bg">#3F51B5</color>
     <color name="room5108bg">#673AB7</color>
