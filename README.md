@@ -6,5 +6,5 @@ For insiders' use only
 
 > 如果有什么改动的地方请在以下的日志处添加。格式为 具体日期+内容
 
-- 2020.06.02 实现了发送post请求以及学号记住功能，但ui还存在缺陷。
-- 2020.06.03 添加了从json中获取字段数据的代码，但目前还没实现显示到Toast里
+- 2020.6.6 从[@VisualDust](https://github.com/visualDust/KexieBabbo)那fork过来
+- 
