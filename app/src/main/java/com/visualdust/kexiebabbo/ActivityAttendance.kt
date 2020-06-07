@@ -4,7 +4,6 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -36,7 +35,7 @@ class ActivityAttendance : AppCompatActivity() {
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
         timer.setOnLongClickListener {
-            if (timer.text == "长按进行签到" || timer.text == "0")
+            if (timer.text == "长按这段文字进行签到" || timer.text == "签到失败" || timer.text == "0")
                 refreshLogIn(SignAgent.UserStatus.ONLINE)
             else refreshLogIn(SignAgent.UserStatus.OFFLINE)
             true
@@ -55,7 +54,7 @@ class ActivityAttendance : AppCompatActivity() {
     fun refreshLogIn(status: SignAgent.UserStatus) {
         if (status == SignAgent.UserStatus.OFFLINE) {
             nbAgent.handleSignOut(VDR.userID, Consumer {
-                timer.text = "长按进行签到"
+                timer.text = "长按这段文字进行签到"
                 progressBar.progress = 0
                 timeDesrip.text = "本周已签到0分钟，还需要1080分钟"
             })
@@ -63,7 +62,10 @@ class ActivityAttendance : AppCompatActivity() {
         } else {
             nbAgent.handleSignOut(VDR.userID, Consumer {
                 nbAgent.handleSignInResponse(VDR.userID, Consumer {
+                    var pos_start = 0
+                    var pos_end = 0
                     val response = it.body!!.string()
+<<<<<<< HEAD
                     val code_start = response.indexOf("code\":") + 6
                     val code_end = response.indexOf(",\"", code_start)
                     val code = response.substring(code_start, code_end)
@@ -89,6 +91,24 @@ class ActivityAttendance : AppCompatActivity() {
                         else if(code == "200" && status == "签退成功"){
                             Toast.makeText(this, school_number + username + status , Toast.LENGTH_SHORT).show()
                         }
+=======
+                    pos_start = response.indexOf("code\":") + 6
+                    pos_end = response.indexOf(",\"", pos_start)
+                    val code = response.substring(pos_start, pos_end)
+                    pos_start = response.indexOf("allTime\":") + 9
+                    pos_end = response.indexOf(",\"", pos_start)
+                    val time = (response.substring(pos_start, pos_end).toDouble() * 60.0)
+                    if (response.contains("签到成功"))
+                        runOnUiThread { Toast.makeText(this, "签到成功", Toast.LENGTH_SHORT).show() }
+                    else if (response.contains("签退成功"))
+                        runOnUiThread { Toast.makeText(this, "签退成功", Toast.LENGTH_SHORT).show() }
+                    else runOnUiThread {
+                        Toast.makeText(
+                            this,
+                            "操作失败 : $response",
+                            Toast.LENGTH_SHORT
+                        ).show()
+>>>>>>> b5cb9f6dd0a73fba67c5027cbc4e56b3c15565a3
                     }
                     runOnUiThread {
                         timer.text = "${time.toInt()}"

@@ -42,7 +42,7 @@
         android:paddingLeft="20dp"
         android:paddingTop="20dp"
         android:paddingRight="20dp"
-        android:text="长按进行签到"
+        android:text="长按这段文字进行签到"
         android:textColor="@color/colorPrimary"
         app:layout_constraintTop_toBottomOf="@+id/topFive_scrollView"
         tools:layout_editor_absoluteX="0dp" />
