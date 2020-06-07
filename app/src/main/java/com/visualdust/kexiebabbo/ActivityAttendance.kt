@@ -71,7 +71,7 @@ class ActivityAttendance : AppCompatActivity() {
                     val time_end = response.indexOf(",\"", time_start)
                     val time = (response.substring(time_start, time_end).toDouble() * 60.0)
                     if (code == "500") {
-                        runOnUiThread{Toast.makeText(this, "你号没了！！！！", Toast.LENGTH_SHORT).show()}
+                        runOnUiThread{Toast.makeText(this, "你号没了", Toast.LENGTH_SHORT).show()}
                     }
                     else{
                         val username_start = response.indexOf("username\":") + 11
@@ -80,7 +80,6 @@ class ActivityAttendance : AppCompatActivity() {
                         val school_number_end = response.indexOf(",\"", school_number_start)
                         val status_start = response.indexOf("message\":") + 8
                         val status_end = response.indexOf(",\"", status_start)
-
                         val status = response.substring(status_start, status_end)
                         val school_number = response.substring(school_number_start, school_number_end)
                         val username = response.substring(username_start, username_end)
@@ -89,9 +88,6 @@ class ActivityAttendance : AppCompatActivity() {
                         }
                         else if(code == "200" && status == "签退成功"){
                             Toast.makeText(this, school_number + username + status , Toast.LENGTH_SHORT).show()
-                        }
-                        else{
-                            runOnUiThread{Toast.makeText(this, "你号没了！！", Toast.LENGTH_SHORT).show()}
                         }
                     }
                     runOnUiThread {
