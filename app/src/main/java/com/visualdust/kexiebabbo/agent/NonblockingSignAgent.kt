@@ -1,35 +1,37 @@
 package com.visualdust.kexiebabbo.agent
 
 import okhttp3.Response
+import java.io.IOException
+import java.lang.Exception
 import java.util.function.Consumer
 
 class NonblockingSignAgent {
 
-    fun handleSignIn(id: Long, consumer: Consumer<Boolean>) = Thread {
+    fun handleSignIn(id: Long, consumer: Consumer<Boolean?>) = Thread {
         consumer.accept(agent.signIn(id))
     }.start()
 
-    fun handleSignInResponse(id: Long, consumer: Consumer<Response>) = Thread {
+    fun handleSignInResponse(id: Long, consumer: Consumer<Response?>) = Thread {
         consumer.accept(agent.postSignIn(id))
     }.start()
 
-    fun handleSignOut(id: Long, consumer: Consumer<Boolean>) = Thread {
+    fun handleSignOut(id: Long, consumer: Consumer<Boolean?>) = Thread {
         consumer.accept(agent.signOut(id))
     }.start()
 
-    fun handleComplaintResponse(id: Long, consumer: Consumer<Response>) = Thread {
+    fun handleComplaintResponse(id: Long, consumer: Consumer<Response?>) = Thread {
         consumer.accept(agent.postComplaint(id))
     }.start()
 
-    fun handleComplaint(id: Long, consumer: Consumer<Boolean>) = Thread {
+    fun handleComplaint(id: Long, consumer: Consumer<Boolean?>) = Thread {
         consumer.accept(agent.complaint(id))
     }.start()
 
-    fun handleSignOutResponse(id: Long, consumer: Consumer<Response>) = Thread {
+    fun handleSignOutResponse(id: Long, consumer: Consumer<Response?>) = Thread {
         consumer.accept(agent.postSignOut(id))
     }.start()
 
-    fun handleAttendance(consumer: Consumer<ArrayList<SignAgent.Attendance>>) = Thread {
+    fun handleAttendance(consumer: Consumer<ArrayList<SignAgent.Attendance>?>) = Thread {
         consumer.accept(agent.getAttendanceList())
     }.start()
 
@@ -37,7 +39,7 @@ class NonblockingSignAgent {
         consumer.accept(agent.getStatus(id))
     }.start()
 
-    fun handleTopFives(consumer: Consumer<ArrayList<SignAgent.Attendance>>) = Thread {
+    fun handleTopFives(consumer: Consumer<ArrayList<SignAgent.Attendance>?>) = Thread {
         consumer.accept(agent.getTopFiveAttendanceList())
     }.start()
 
