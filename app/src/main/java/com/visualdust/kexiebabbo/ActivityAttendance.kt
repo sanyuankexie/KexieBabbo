@@ -34,6 +34,20 @@ class ActivityAttendance : AppCompatActivity() {
         progressBar = findViewById<ProgressBar>(R.id.signInTime_ProcessBar)
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
+        timeDesrip.setOnClickListener {
+            if (timeDesrip.text == "本周已签到0分钟，还需要1080分钟"){
+                runOnUiThread {
+                    Toast.makeText(this, "你还没有签到，无法查看你的签到时间", Toast.LENGTH_SHORT).show()
+                }
+            } else{
+                    nbAgent.handleTime(VDR.userID, Consumer {
+                        runOnUiThread {
+                            Toast.makeText(this, "你本周的签到时间为:${it}分钟", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+            }
+        }
+
         timer.setOnLongClickListener {
             if (timer.text == "长按这段文字进行签到" || timer.text == "签到失败" || timer.text == "0")
                 refreshLogIn(SignAgent.UserStatus.ONLINE)
@@ -54,7 +68,6 @@ class ActivityAttendance : AppCompatActivity() {
                 refresh()
             }
         }.start()
-
         refresh()
     }
 
@@ -72,11 +85,9 @@ class ActivityAttendance : AppCompatActivity() {
                     var pos_start = 0
                     var pos_end = 0
                     val response = it!!.body!!.string()
-                    pos_start = response.indexOf("code\":") + 6
+                    pos_start = response.indexOf("userid\":") + 8
                     pos_end = response.indexOf(",\"", pos_start)
-                    pos_start = response.indexOf("allTime\":") + 9
-                    pos_end = response.indexOf(",\"", pos_start)
-                    val time = (response.substring(pos_start, pos_end).toDouble() * 60.0)
+                    val userid = response.substring(pos_start, pos_end).toLong()
                     if (response.contains("签到成功"))
                         runOnUiThread { Toast.makeText(this, "签到成功", Toast.LENGTH_SHORT).show() }
                     else if (response.contains("成功"))
@@ -89,11 +100,13 @@ class ActivityAttendance : AppCompatActivity() {
                         ).show()
                     }
                     runOnUiThread {
-                        timer.text = "${time.toInt()}"
-                        if (progressBar.max < time.toInt())
-                            progressBar.max = time.toInt()
-                        progressBar.progress = time.toInt()
-                        timeDesrip.text = "本周已签到${time.toInt()}分钟，还需要${(1080 - time.toInt())}分钟"
+                        nbAgent.handleTime(userid, Consumer {
+                            timer.text = "${it.toInt()}"
+                            if (progressBar.max < it.toInt())
+                                progressBar.max =it.toInt()
+                            progressBar.progress = it.toInt()
+                            timeDesrip.text = "本周已签到${it.toInt()}分钟，还需要${(1080 - it.toInt())}分钟"
+                        })
                     }
                     refresh()
                 })
