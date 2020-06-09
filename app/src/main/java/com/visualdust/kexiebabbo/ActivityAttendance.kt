@@ -56,10 +56,10 @@ class ActivityAttendance : AppCompatActivity() {
             true
         }
 
-//        nbAgent.handleStatus(VDR.userID, Consumer {
-//            if (it == SignAgent.UserStatus.ONLINE)
-//                refreshLogIn(SignAgent.UserStatus.ONLINE)
-//        })
+        nbAgent.handleStatus(VDR.userID, Consumer {
+            if (it == SignAgent.UserStatus.ONLINE)
+                refreshLogIn(SignAgent.UserStatus.ONLINE)
+        })
 
         refresh()
 
