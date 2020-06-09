@@ -21,7 +21,7 @@ class Resources {
         const val complaintAPIName = "Complaint"
         const val attendancesListAPIName = ""
         const val rankTopFiveAttendanceAPIName = "TopFive"
-        const val getTimeAPIName = "getTime"
+        const val timeAPIName = "getTime"
 
         var userID :Long = -266555
     }

@@ -1,14 +1,12 @@
 package com.visualdust.kexiebabbo.agent
 
-import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import okhttp3.ResponseBody
 import java.io.IOException
 import java.lang.Exception
-import kotlin.math.ln
+
 import com.visualdust.kexiebabbo.data.Resources as R
 
 class SignAgent private constructor() {
@@ -133,7 +131,7 @@ class SignAgent private constructor() {
 
     private fun getTimeResponse(id: Long): Response? {
         try {
-            return get(R.serviceAddress + R.div + R.getTimeAPIName + "?userId=${id}" )
+            return get(R.serviceAddress + R.div + R.timeAPIName + "?userId=${id}" )
         } catch (ioe: IOException) {
             throw ioe
         } catch (e: Exception) {
