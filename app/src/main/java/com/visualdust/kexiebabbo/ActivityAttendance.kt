@@ -73,23 +73,23 @@ class ActivityAttendance : AppCompatActivity() {
             true
         }
 
+        logedin = true
+        refresh()
+        logedin = false
+        refresher.start()
         nbAgent.handleStatus(VDR.userID, Consumer {
             if (it == SignAgent.UserStatus.ONLINE) {
-                runOnUiThread {
-                    parent.removeView(animBt)
-                    timer.alpha = 1F
-                    attendanceListGridLayout.alpha = 1F
-                    topFiveListLinearLayout.alpha = 1F
-                    top_div.setTextColor(getColor(R.color.colorWhitePure))
-                    bottomBar.alpha = 1F
-                }
-                refreshLogIn(SignAgent.UserStatus.ONLINE)
-            } else {
-                logedin = true
-                refresh()
-                logedin = false
+//                runOnUiThread {
+//                    parent.removeView(animBt)
+//                    timer.alpha = 1F
+//                    attendanceListGridLayout.alpha = 1F
+//                    topFiveListLinearLayout.alpha = 1F
+//                    top_div.setTextColor(getColor(R.color.colorWhitePure))
+//                    bottomBar.alpha = 1F
+//                }
+//                refreshLogIn(SignAgent.UserStatus.ONLINE)
+                runOnUiThread { animBt.performClick() }
             }
-            refresher.start()
         })
 
         animBt.setOnClickListener {
@@ -207,6 +207,11 @@ class ActivityAttendance : AppCompatActivity() {
 
     private fun refresh() {
         if (!logedin) return
+        nbAgent.handleStatus(VDR.userID, Consumer {
+            if (it != SignAgent.UserStatus.ONLINE) {
+                runOnUiThread { timer.performLongClick() }
+            }
+        })
         nbAgent.handleAttendance(Consumer {
             runOnUiThread { attendanceListGridLayout.removeAllViews() }
             for (member in it!!.sortedWith(compareBy({ -it.time }))) {
