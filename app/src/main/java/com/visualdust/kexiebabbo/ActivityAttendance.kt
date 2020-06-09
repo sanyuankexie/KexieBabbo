@@ -63,10 +63,6 @@ class ActivityAttendance : AppCompatActivity() {
         bottomBar = findViewById(R.id.bottom_bar)
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
-        logedin = true
-        refresh()
-        logedin = false
-
         timer.setOnLongClickListener {
             if (logable) {
                 if (timer.text == "长按这段文字进行签到" || timer.text == "签到失败" || timer.text == "0") {
@@ -88,8 +84,11 @@ class ActivityAttendance : AppCompatActivity() {
                     bottomBar.alpha = 1F
                 }
                 refreshLogIn(SignAgent.UserStatus.ONLINE)
+            } else {
+                logedin = true
+                refresh()
+                logedin = false
             }
-
             refresher.start()
         })
 
