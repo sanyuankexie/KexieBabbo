@@ -4,9 +4,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import okhttp3.ResponseBody
 import java.io.IOException
 import java.lang.Exception
+
 import com.visualdust.kexiebabbo.data.Resources as R
 
 class SignAgent private constructor() {
@@ -24,8 +24,18 @@ class SignAgent private constructor() {
         }
     }
 
+    class timeList(
+        var id: Long,
+        var alltime: Double = 0.0
+    ) {
+        override fun toString(): String {
+            return "[userId]$id,[alltime]$alltime"
+        }
+    }
+
+
     enum class UserStatus {
-        ONLINE, OFFLINE,NETFAILURE
+        ONLINE, OFFLINE, NETFAILURE
     }
 
     private fun post(url: String, body: String): Response? = client.newCall(
@@ -119,6 +129,16 @@ class SignAgent private constructor() {
         }
     }
 
+    private fun getTimeResponse(id: Long): Response? {
+        try {
+            return get(R.serviceAddress + R.div + R.timeAPIName + "?userId=${id}")
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
     fun getAttendanceList(): ArrayList<Attendance>? {
         try {
             val response = getAttendancesResponse()!!.body!!.string()
@@ -144,7 +164,15 @@ class SignAgent private constructor() {
                 pos_end = response.indexOf("\"}", pos_start)
                 val username = response.substring(pos_start, pos_end)
 
-                attendanceList.add(Attendance(dept, location, userid.toLong(), username))
+                attendanceList.add(
+                    Attendance(
+                        dept,
+                        location,
+                        userid.toLong(),
+                        username,
+                        getTime(userid.toLong()) ?: 0.0
+                    )
+                )
             }
             return attendanceList
         } catch (ioe: IOException) {
@@ -212,6 +240,22 @@ class SignAgent private constructor() {
         }
     }
 
+    fun getTime(id: Long): Double? {
+        return try {
+            val response = getTimeResponse(id)!!.body!!.string()
+            var pos_start = 0
+            var pos_end = 0
+            pos_start = response.indexOf("alltime\":") + 9
+            pos_end = response.indexOf("},", pos_start)
+            val alltime = response.substring(pos_start, pos_end).toDouble() * 60
+            alltime
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     companion object {
         private val signMachine = SignAgent()
 
@@ -222,7 +266,8 @@ class SignAgent private constructor() {
 
 fun main() {
     val agent = SignAgent.getAgent()
-    println(agent.signIn(1900420217))
+    println(agent.signIn(1900301236))
+    println(agent.getTime(1900301236))
 //    println(agent.signIn("1900420217"))
 //    println(agent.getAttendanceList()[0])
 //    println(agent.getTopFiveAttendanceList()[1])

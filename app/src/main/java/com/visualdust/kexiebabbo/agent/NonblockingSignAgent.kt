@@ -43,6 +43,10 @@ class NonblockingSignAgent {
         consumer.accept(agent.getTopFiveAttendanceList())
     }.start()
 
+    fun handleTime(id: Long, consumer: Consumer<Double?>) = Thread{
+        consumer.accept(agent.getTime(id))
+    }.start()
+
     private constructor()
 
     companion object {

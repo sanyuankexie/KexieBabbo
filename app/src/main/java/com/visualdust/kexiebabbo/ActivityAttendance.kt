@@ -54,6 +54,7 @@ class ActivityAttendance : AppCompatActivity() {
                 refresh()
             }
         }.start()
+        refresh()
     }
 
     private fun refreshLogIn(status: SignAgent.UserStatus) {
@@ -62,19 +63,17 @@ class ActivityAttendance : AppCompatActivity() {
                 timer.text = "长按这段文字进行签到"
                 progressBar.progress = 0
                 timeDesrip.text = "本周已签到0分钟，还需要1080分钟"
+                refresh()
             })
-            refresh()
         } else {
             nbAgent.handleSignOut(VDR.userID, Consumer {
                 nbAgent.handleSignInResponse(VDR.userID, Consumer {
                     var pos_start = 0
                     var pos_end = 0
                     val response = it!!.body!!.string()
-                    pos_start = response.indexOf("code\":") + 6
+                    pos_start = response.indexOf("userid\":") + 8
                     pos_end = response.indexOf(",\"", pos_start)
-                    pos_start = response.indexOf("allTime\":") + 9
-                    pos_end = response.indexOf(",\"", pos_start)
-                    val time = (response.substring(pos_start, pos_end).toDouble() * 60.0)
+                    val userid = response.substring(pos_start, pos_end).toLong()
                     if (response.contains("签到成功"))
                         runOnUiThread { Toast.makeText(this, "签到成功", Toast.LENGTH_SHORT).show() }
                     else if (response.contains("成功"))
@@ -86,23 +85,25 @@ class ActivityAttendance : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
-                    runOnUiThread {
-                        timer.text = "${time.toInt()}"
-                        if (progressBar.max < time.toInt())
-                            progressBar.max = time.toInt()
-                        progressBar.progress = time.toInt()
-                        timeDesrip.text = "本周已签到${time.toInt()}分钟，还需要${(1080 - time.toInt())}分钟"
-                    }
+                    nbAgent.handleTime(userid, Consumer {
+                        runOnUiThread {
+                            timer.text = "${it!!.toInt()}"
+                            if (progressBar.max < it.toInt())
+                                progressBar.max = it.toInt()
+                            progressBar.progress = it.toInt()
+                            timeDesrip.text = "本周已签到${it.toInt()}分钟，还需要${(1080 - it.toInt())}分钟"
+                        }
+                    })
                     refresh()
                 })
             })
         }
     }
 
-    fun refresh() {
+    private fun refresh() {
         nbAgent.handleAttendance(Consumer {
             runOnUiThread { attendanceListGridLayout.removeAllViews() }
-            for (member in it!!) {
+            for (member in it!!.sortedWith(compareBy({ -it.time }))) {
                 val bt = Button(this)
                 bt.setText(member.name)
                 val popupMenu = PopupMenu(this, bt)
@@ -140,8 +141,19 @@ class ActivityAttendance : AppCompatActivity() {
                         Toast.makeText(applicationContext, "已复制到剪贴板", Toast.LENGTH_LONG).show()
                         true
                     }
+                menu.add(Menu.NONE, Menu.FIRST + 3, 3, "签到时长 : ${member.time.toInt()}分钟")
+                    .setOnMenuItemClickListener {
+                        clipboardManager.setPrimaryClip(
+                            ClipData.newPlainText(
+                                "Time",
+                                member.time.toInt().toString() + "分钟"
+                            )
+                        )
+                        Toast.makeText(applicationContext, "已复制到剪贴板", Toast.LENGTH_LONG).show()
+                        true
+                    }
                 if (VDR.userID != member.id)
-                    menu.add(Menu.NONE, Menu.FIRST + 3, 3, "是兄弟就举报！")
+                    menu.add(Menu.NONE, Menu.FIRST + 4, 4, "是兄弟就举报！")
                         .setOnMenuItemClickListener {
                             nbAgent.handleComplaint(member.id, Consumer {
                                 if (member.id == VDR.userID)
@@ -153,7 +165,7 @@ class ActivityAttendance : AppCompatActivity() {
                             true
                         }
                 else
-                    menu.add(Menu.NONE, Menu.FIRST + 3, 3, "我要举报自己").setOnMenuItemClickListener {
+                    menu.add(Menu.NONE, Menu.FIRST + 4, 4, "我要举报自己").setOnMenuItemClickListener {
                         Toast.makeText(applicationContext, "请对自己好一点", Toast.LENGTH_LONG)
                             .show()
                         true
