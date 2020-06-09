@@ -35,7 +35,7 @@ class ActivityAttendance : AppCompatActivity() {
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
         timeDesrip.setOnClickListener {
-            if (timeDesrip.text == "本周已签到0分钟，还需要1080分钟"){
+            if (timeDesrip.text == "本周已签到0/0分钟"){
                 runOnUiThread {
                     Toast.makeText(this, "你还没有签到，无法查看你的签到时间", Toast.LENGTH_SHORT).show()
                 }
@@ -56,10 +56,10 @@ class ActivityAttendance : AppCompatActivity() {
             true
         }
 
-        nbAgent.handleStatus(VDR.userID, Consumer {
-            if (it == SignAgent.UserStatus.ONLINE)
-                refreshLogIn(SignAgent.UserStatus.ONLINE)
-        })
+//        nbAgent.handleStatus(VDR.userID, Consumer {
+//            if (it == SignAgent.UserStatus.ONLINE)
+//                refreshLogIn(SignAgent.UserStatus.ONLINE)
+//        })
 
         refresh()
 
