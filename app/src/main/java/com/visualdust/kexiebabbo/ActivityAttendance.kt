@@ -1,5 +1,6 @@
 package com.visualdust.kexiebabbo
 
+import android.animation.ObjectAnimator
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -7,8 +8,11 @@ import android.os.Bundle
 import android.view.Menu
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.animation.addListener
 import com.visualdust.kexiebabbo.agent.NonblockingSignAgent
 import com.visualdust.kexiebabbo.agent.SignAgent
+import kotlinx.android.synthetic.main.activity_attendance.*
 import java.util.function.Consumer
 import com.visualdust.kexiebabbo.data.Resources as VDR
 
@@ -16,58 +20,160 @@ import com.visualdust.kexiebabbo.data.Resources as VDR
 class ActivityAttendance : AppCompatActivity() {
     val agent = SignAgent.getAgent()
     val nbAgent = NonblockingSignAgent.getAgent()
+    var logable = true
+    var logedin = false
+    lateinit var parent: ConstraintLayout
+    lateinit var animBt: Button
     lateinit var timer: TextView
     lateinit var attendanceListGridLayout: GridLayout
     lateinit var topFiveListLinearLayout: LinearLayout
     lateinit var timeDesrip: TextView
     lateinit var progressBar: ProgressBar
+    lateinit var bottomBar: LinearLayout
     lateinit var clipboardManager: ClipboardManager
+
+    class Refresher(var activity: ActivityAttendance) : Thread() {
+        var flag = true
+        override fun run() {
+            while (true) {
+                if (!flag) return
+                activity.refresh()
+                sleep(10000)
+            }
+        }
+
+        fun release() {
+            flag = false
+        }
+    }
+
+    var refresher = Refresher(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_attendance)
 
+        parent = findViewById(R.id.constraintParent_layout)
+        animBt = findViewById(R.id.animBt_button)
         timer = findViewById<TextView>(R.id.dailyTimer_textView)
         attendanceListGridLayout = findViewById<GridLayout>(R.id.attendanceList_gridLayout)
         topFiveListLinearLayout = findViewById<LinearLayout>(R.id.topFiveList_linearLayout)
         timeDesrip = findViewById<TextView>(R.id.timeDescrip_textView)
         progressBar = findViewById<ProgressBar>(R.id.signInTime_ProcessBar)
+        bottomBar = findViewById(R.id.bottom_bar)
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
+        logedin = true
+        refresh()
+        logedin = false
+
         timer.setOnLongClickListener {
-            if (timer.text == "长按这段文字进行签到" || timer.text == "签到失败" || timer.text == "0")
-                refreshLogIn(SignAgent.UserStatus.ONLINE)
-            else refreshLogIn(SignAgent.UserStatus.OFFLINE)
+            if (logable) {
+                if (timer.text == "长按这段文字进行签到" || timer.text == "签到失败" || timer.text == "0") {
+                }
+//                refreshLogIn(SignAgent.UserStatus.ONLINE)
+                else refreshLogIn(SignAgent.UserStatus.OFFLINE)
+            }
             true
         }
 
         nbAgent.handleStatus(VDR.userID, Consumer {
-            if (it == SignAgent.UserStatus.ONLINE)
+            if (it == SignAgent.UserStatus.ONLINE) {
+                runOnUiThread {
+                    parent.removeView(animBt)
+                    timer.alpha = 1F
+                    attendanceListGridLayout.alpha = 1F
+                    topFiveListLinearLayout.alpha = 1F
+                    top_div.setTextColor(getColor(R.color.colorWhitePure))
+                    bottomBar.alpha = 1F
+                }
                 refreshLogIn(SignAgent.UserStatus.ONLINE)
+            }
+
+            refresher.start()
         })
 
-        refresh()
-
-        Thread {
-            while (true) {
-                Thread.sleep(10000)
-                refresh()
+        animBt.setOnClickListener {
+            if (logable) {
+                logable = false
+                refreshLogIn(SignAgent.UserStatus.ONLINE)
+                var animator = ObjectAnimator.ofFloat(animBt, "alpha", 1f, 0f).setDuration(1000)
+                animator.addListener(onStart = {
+                    ObjectAnimator.ofFloat(animBt, "rotation", 0f, 180f, 360f).setDuration(1000)
+                        .start()
+                    ObjectAnimator.ofFloat(attendanceListGridLayout, "alpha", 0f, 1f)
+                        .setDuration(1000)
+                        .start()
+                    ObjectAnimator.ofFloat(topFiveListLinearLayout, "alpha", 0f, 1f)
+                        .setDuration(1000)
+                        .start()
+                    ObjectAnimator.ofFloat(timer, "alpha", 0f, 1f).setDuration(1000).start()
+                    ObjectAnimator.ofFloat(bottomBar, "alpha", 0f, 1f).setDuration(1000).start()
+                    ObjectAnimator.ofArgb(
+                        top_div,
+                        "textColor",
+                        getColor(R.color.colorPrimary),
+                        getColor(R.color.colorWhitePure)
+                    ).setDuration(1000)
+                        .start()
+                })
+                animator.addListener(onEnd = {
+                    runOnUiThread {
+                        parent.removeView(animBt)
+                        logable = true
+                    }
+                })
+                animator.start()
             }
-        }.start()
-        refresh()
+        }
     }
 
     private fun refreshLogIn(status: SignAgent.UserStatus) {
         if (status == SignAgent.UserStatus.OFFLINE) {
+            logable = false
             nbAgent.handleSignOut(VDR.userID, Consumer {
-                timer.text = "长按这段文字进行签到"
-                progressBar.progress = 0
-                timeDesrip.text = "本周已签到0分钟，还需要1080分钟"
-                refresh()
+                runOnUiThread {
+                    parent.addView(animBt)
+                    var animator =
+                        ObjectAnimator.ofFloat(animBt, "rotation", 360f, 180f, 0f).setDuration(1000)
+                    animator.addListener(onStart = {
+                        ObjectAnimator.ofFloat(attendanceListGridLayout, "alpha", 1f, 0f)
+                            .setDuration(1000)
+                            .start()
+                        ObjectAnimator.ofFloat(topFiveListLinearLayout, "alpha", 1f, 0f)
+                            .setDuration(1000)
+                            .start()
+                        ObjectAnimator.ofFloat(timer, "alpha", 1f, 0f).setDuration(500)
+                            .start()
+                        ObjectAnimator.ofFloat(bottomBar, "alpha", 1f, 0f).setDuration(500)
+                            .start()
+                        ObjectAnimator.ofFloat(animBt, "alpha", 0f, 1f).setDuration(500)
+                            .start()
+                        ObjectAnimator.ofArgb(
+                            top_div,
+                            "textColor",
+                            getColor(R.color.colorWhitePure),
+                            getColor(R.color.colorPrimary)
+                        ).setDuration(1000)
+                            .start()
+                    })
+                    animator.addListener(onEnd = {
+                        timer.text = "长按这段文字进行签到"
+                        progressBar.progress = 0
+                        timeDesrip.text = "本周已签到0分钟，还需要1080分钟"
+//                        attendanceListGridLayout.removeAllViews()
+//                        topFiveListLinearLayout.removeAllViews()
+                        logable = true
+
+                    })
+                    animator.start()
+                }
+                logedin = false
             })
         } else {
             nbAgent.handleSignOut(VDR.userID, Consumer {
                 nbAgent.handleSignInResponse(VDR.userID, Consumer {
+                    refresh()
                     var pos_start = 0
                     var pos_end = 0
                     val response = it!!.body!!.string()
@@ -94,13 +200,14 @@ class ActivityAttendance : AppCompatActivity() {
                             timeDesrip.text = "本周已签到${it.toInt()}分钟，还需要${(1080 - it.toInt())}分钟"
                         }
                     })
-                    refresh()
+                    logedin = true
                 })
             })
         }
     }
 
     private fun refresh() {
+        if (!logedin) return
         nbAgent.handleAttendance(Consumer {
             runOnUiThread { attendanceListGridLayout.removeAllViews() }
             for (member in it!!.sortedWith(compareBy({ -it.time }))) {
