@@ -42,6 +42,7 @@ class ActivityAttendance : AppCompatActivity() {
             } else{
                     nbAgent.handleTime(VDR.userID, Consumer {
                         runOnUiThread {
+                            // for testing
                             Toast.makeText(this, "你本周的签到时间为:${it}分钟", Toast.LENGTH_SHORT).show()
                         }
                     })
