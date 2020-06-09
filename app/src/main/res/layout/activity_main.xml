@@ -6,43 +6,54 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <ImageView
-        android:id="@+id/titleImage"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginBottom="300dp"
-        android:contentDescription="@string/logoDescription"
-        android:src="@mipmap/logo_csta"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
+        android:layout_height="match_parent"
+        android:background="@color/colorWhitePure"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="0dp">
 
-    <EditText
-        android:id="@+id/userID_editText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginTop="50dp"
-        android:inputType="number"
-        android:singleLine="true"
-        app:layout_constraintTop_toBottomOf="@+id/titleImage"
-        android:autofillHints="Enter your id" />
+        <ImageView
+            android:id="@+id/titleImage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="400dp"
+            android:contentDescription="@string/logoDescription"
+            android:src="@mipmap/logo_csta"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:layout_editor_absoluteX="0dp" />
 
-    <Button
-        android:id="@+id/startTrial_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start trial"
-        app:layout_constraintEnd_toEndOf="@+id/userID_editText"
-        app:layout_constraintTop_toBottomOf="@+id/userID_editText" />
+        <EditText
+            android:id="@+id/userID_editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="50dp"
+            android:autofillHints="Enter your id"
+            android:inputType="number"
+            android:singleLine="true"
+            app:layout_constraintTop_toBottomOf="@+id/titleImage" />
 
-    <ProgressBar
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/titleImage" />
+        <com.visualdust.kexiebabbo.uiwiget.AnimButton
+            android:id="@+id/startTrial_button"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="Start trial"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/colorWhitePure"
+            app:layout_constraintEnd_toEndOf="@+id/userID_editText"
+            app:layout_constraintTop_toBottomOf="@+id/userID_editText" />
+
+        <ProgressBar
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/titleImage" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
