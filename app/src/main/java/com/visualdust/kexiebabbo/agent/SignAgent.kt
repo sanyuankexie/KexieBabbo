@@ -1,5 +1,6 @@
 package com.visualdust.kexiebabbo.agent
 
+import android.util.Log
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -7,6 +8,7 @@ import okhttp3.Response
 import okhttp3.ResponseBody
 import java.io.IOException
 import java.lang.Exception
+import kotlin.math.ln
 import com.visualdust.kexiebabbo.data.Resources as R
 
 class SignAgent private constructor() {
@@ -23,6 +25,16 @@ class SignAgent private constructor() {
             return "[dept]$dept,[location]$location,[userid]$id,[username]$name,[time]$time"
         }
     }
+
+    class timeList(
+        var id: Long,
+        var alltime: Double = 0.0
+    ){
+        override fun toString(): String {
+            return "[userId]$id,[alltime]$alltime"
+        }
+    }
+
 
     enum class UserStatus {
         ONLINE, OFFLINE,NETFAILURE
@@ -112,6 +124,16 @@ class SignAgent private constructor() {
     private fun getTopFiveAttendancesResponse(): Response? {
         try {
             return get(R.serviceAddress + R.div + R.rankTopFiveAttendanceAPIName)
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    private fun getTimeResponse(id: Long): Response? {
+        try {
+            return get(R.serviceAddress + R.div + R.getTimeAPIName + "?userId=${id}" )
         } catch (ioe: IOException) {
             throw ioe
         } catch (e: Exception) {
@@ -212,6 +234,20 @@ class SignAgent private constructor() {
         }
     }
 
+    fun getTime(id: Long) : Double{
+        val response = getTimeResponse(id)!!.body!!.string()
+        var pos_start = 0
+        var pos_end = 0
+        try {
+            pos_start = response.indexOf("alltime\":") + 9
+            pos_end = response.indexOf("},", pos_start)
+            val alltime = response.substring(pos_start, pos_end).toDouble() * 60
+            return alltime
+        }catch (e: Exception){
+            throw e
+        }
+    }
+
     companion object {
         private val signMachine = SignAgent()
 
@@ -222,7 +258,8 @@ class SignAgent private constructor() {
 
 fun main() {
     val agent = SignAgent.getAgent()
-    println(agent.signIn(1900420217))
+    println(agent.signIn(1900301236))
+    println(agent.getTime(1900301236))
 //    println(agent.signIn("1900420217"))
 //    println(agent.getAttendanceList()[0])
 //    println(agent.getTopFiveAttendanceList()[1])
