@@ -4,9 +4,12 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import okhttp3.ResponseBody
+import java.io.IOException
+import java.lang.Exception
 import com.visualdust.kexiebabbo.data.Resources as R
 
-class SignAgent {
+class SignAgent private constructor() {
     private val client = OkHttpClient()
 
     class Attendance(
@@ -22,112 +25,192 @@ class SignAgent {
     }
 
     enum class UserStatus {
-        ONLINE, OFFLINE
+        ONLINE, OFFLINE,NETFAILURE
     }
 
-    private fun post(url: String, body: String): Response = client.newCall(
+    private fun post(url: String, body: String): Response? = client.newCall(
         Request.Builder().url(url).post(body.toRequestBody(R.JsonType)).build()
     ).execute()
 
-    private fun get(url: String): Response = client.newCall(
+    private fun get(url: String): Response? = client.newCall(
         Request.Builder().url(url).get().build()
     ).execute()
 
-    fun postSignIn(id: Long) =
-        post(R.serviceAddress + R.div + R.signInAPIName, "{\"userId\":\"$id\"}")
-
-    fun signIn(id: Long): Boolean = postSignIn(id).body!!.string().contains("成功")
-
-    fun postSignOut(id: Long) =
-        post(R.serviceAddress + R.div + R.signOutAPIName, "{\"userId\":\"$id\"}")
-
-    fun signOut(id: Long): Boolean = postSignOut(id).body!!.string().contains("成功")
-
-    fun postComplaint(id: Long) =
-        post(R.serviceAddress + R.div + R.complaintAPIName, "{\"userId\":\"$id\"}")
-
-    fun complaint(id: Long) = postComplaint(id).body!!.string().contains("成功")
-
-    private fun getAttendancesResponse() = get(R.serviceAddress + R.div + R.attendancesListAPIName)
-
-    private fun getTopFiveAttendancesResponse() =
-        get(R.serviceAddress + R.div + R.rankTopFiveAttendanceAPIName)
-
-    fun getAttendanceList(): ArrayList<Attendance> {
-        val response = getAttendancesResponse().body!!.string()
-        val attendanceList = ArrayList<Attendance>()
-        var pos_start = 0
-        var pos_end = 0
-        while (true) {
-            pos_start = response.indexOf("dept\":\"", pos_end) + 7
-            if (pos_start <= pos_end || pos_start == -1) break
-            pos_end = response.indexOf("\",\"", pos_start)
-            val dept = response.substring(pos_start, pos_end)
-
-            pos_start = response.indexOf("location\":\"", pos_end) + 11
-            pos_end = response.indexOf("\",\"", pos_start)
-            val location = response.substring(pos_start, pos_end)
-
-            pos_start = response.indexOf("userid\":", pos_end) + 8
-            pos_end = response.indexOf(",\"", pos_start)
-            val userid = response.substring(pos_start, pos_end)
-
-            pos_start = response.indexOf("username\":\"", pos_end) + 11
-            pos_end = response.indexOf("\"}", pos_start)
-            val username = response.substring(pos_start, pos_end)
-
-            attendanceList.add(Attendance(dept, location, userid.toLong(), username))
+    fun postSignIn(id: Long): Response? {
+        try {
+            return post(R.serviceAddress + R.div + R.signInAPIName, "{\"userId\":\"$id\"}")
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
         }
-        return attendanceList
     }
 
-    fun getTopFiveAttendanceList(): ArrayList<Attendance> {
-        val response = getTopFiveAttendancesResponse().body!!.string()
-        val topFiveAttendanceList = ArrayList<Attendance>()
-        var pos_start = 0
-        var pos_end = 0
-        while (true) {
-            pos_start = response.indexOf("userid\":", pos_end) + 8
-            if (pos_start <= pos_end || pos_start == -1) break
-            pos_end = response.indexOf(",\"", pos_start)
-            val userid = response.substring(pos_start, pos_end)
 
-            pos_start = response.indexOf("username\":\"", pos_end) + 11
-            pos_end = response.indexOf("\",", pos_start)
-            val username = response.substring(pos_start, pos_end)
-
-            pos_start = response.indexOf("dept\":\"", pos_end) + 7
-            pos_end = response.indexOf("\",\"", pos_start)
-            val dept = response.substring(pos_start, pos_end)
-
-            pos_start = response.indexOf("location\":\"", pos_end) + 11
-            pos_end = response.indexOf("\",\"", pos_start)
-            val location = response.substring(pos_start, pos_end)
-
-            pos_start = response.indexOf("allTime\":", pos_end) + 9
-            pos_end = response.indexOf(",\"", pos_start)
-            val allTime = response.substring(pos_start, pos_end).toDouble() * 60
-
-            topFiveAttendanceList.add(
-                Attendance(
-                    dept,
-                    location,
-                    userid.toLong(),
-                    username,
-                    allTime
-                )
-            )
+    fun signIn(id: Long): Boolean? {
+        try {
+            return postSignIn(id)!!.body!!.string().contains("成功")
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
         }
-        return topFiveAttendanceList
+    }
+
+    fun postSignOut(id: Long): Response? {
+        try {
+            return post(R.serviceAddress + R.div + R.signOutAPIName, "{\"userId\":\"$id\"}")
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+
+    fun signOut(id: Long): Boolean? {
+        try {
+            return postSignOut(id)!!.body!!.string().contains("成功")
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    fun postComplaint(id: Long): Response? {
+        try {
+            return post(R.serviceAddress + R.div + R.complaintAPIName, "{\"userId\":\"$id\"}")
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+
+    fun complaint(id: Long): Boolean {
+        try {
+            return postComplaint(id)!!.body!!.string().contains("成功")
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    private fun getAttendancesResponse(): Response? {
+        try {
+            return get(R.serviceAddress + R.div + R.attendancesListAPIName)
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    private fun getTopFiveAttendancesResponse(): Response? {
+        try {
+            return get(R.serviceAddress + R.div + R.rankTopFiveAttendanceAPIName)
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    fun getAttendanceList(): ArrayList<Attendance>? {
+        try {
+            val response = getAttendancesResponse()!!.body!!.string()
+            val attendanceList = ArrayList<Attendance>()
+            var pos_start = 0
+            var pos_end = 0
+
+            while (true) {
+                pos_start = response.indexOf("dept\":\"", pos_end) + 7
+                if (pos_start <= pos_end || pos_start == -1) break
+                pos_end = response.indexOf("\",\"", pos_start)
+                val dept = response.substring(pos_start, pos_end)
+
+                pos_start = response.indexOf("location\":\"", pos_end) + 11
+                pos_end = response.indexOf("\",\"", pos_start)
+                val location = response.substring(pos_start, pos_end)
+
+                pos_start = response.indexOf("userid\":", pos_end) + 8
+                pos_end = response.indexOf(",\"", pos_start)
+                val userid = response.substring(pos_start, pos_end)
+
+                pos_start = response.indexOf("username\":\"", pos_end) + 11
+                pos_end = response.indexOf("\"}", pos_start)
+                val username = response.substring(pos_start, pos_end)
+
+                attendanceList.add(Attendance(dept, location, userid.toLong(), username))
+            }
+            return attendanceList
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    fun getTopFiveAttendanceList(): ArrayList<Attendance>? {
+        try {
+            val response = getTopFiveAttendancesResponse()!!.body!!.string()
+            val topFiveAttendanceList = ArrayList<Attendance>()
+            var pos_start = 0
+            var pos_end = 0
+            while (true) {
+                pos_start = response.indexOf("userid\":", pos_end) + 8
+                if (pos_start <= pos_end || pos_start == -1) break
+                pos_end = response.indexOf(",\"", pos_start)
+                val userid = response.substring(pos_start, pos_end)
+
+                pos_start = response.indexOf("username\":\"", pos_end) + 11
+                pos_end = response.indexOf("\",", pos_start)
+                val username = response.substring(pos_start, pos_end)
+
+                pos_start = response.indexOf("dept\":\"", pos_end) + 7
+                pos_end = response.indexOf("\",\"", pos_start)
+                val dept = response.substring(pos_start, pos_end)
+
+                pos_start = response.indexOf("location\":\"", pos_end) + 11
+                pos_end = response.indexOf("\",\"", pos_start)
+                val location = response.substring(pos_start, pos_end)
+
+                pos_start = response.indexOf("allTime\":", pos_end) + 9
+                pos_end = response.indexOf(",\"", pos_start)
+                val allTime = response.substring(pos_start, pos_end).toDouble() * 60
+
+                topFiveAttendanceList.add(
+                    Attendance(
+                        dept,
+                        location,
+                        userid.toLong(),
+                        username,
+                        allTime
+                    )
+                )
+            }
+            return topFiveAttendanceList
+        } catch (ioe: IOException) {
+            throw ioe
+        } catch (e: Exception) {
+            throw e
+        }
     }
 
     fun getStatus(id: Long): UserStatus {
-        if (getAttendancesResponse().body!!.string().contains(id.toString()))
-            return UserStatus.ONLINE
-        return UserStatus.OFFLINE
+        try {
+            if (getAttendancesResponse()!!.body!!.string().contains(id.toString()))
+                return UserStatus.ONLINE
+            return UserStatus.OFFLINE
+        } catch (ioe: IOException) {
+            return UserStatus.NETFAILURE
+        } catch (e: Exception) {
+            return UserStatus.NETFAILURE
+        }
     }
-
-    private constructor()
 
     companion object {
         private val signMachine = SignAgent()
