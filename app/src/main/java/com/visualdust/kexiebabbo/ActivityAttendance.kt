@@ -14,6 +14,7 @@ import androidx.core.view.children
 import com.visualdust.kexiebabbo.agent.NonblockingSignAgent
 import com.visualdust.kexiebabbo.agent.SignAgent
 import kotlinx.android.synthetic.main.activity_attendance.*
+import java.lang.Exception
 import java.util.function.Consumer
 import com.visualdust.kexiebabbo.data.Resources as VDR
 
@@ -54,13 +55,6 @@ class ActivityAttendance : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_attendance)
 
-        if (VDR.userID < 0) {
-            val pref = getSharedPreferences("${VDR.appName}.userID", Context.MODE_PRIVATE)
-            val userID = pref.getLong("userID", 0)
-            if (userID != 0L)
-                VDR.userID = userID
-        }
-
         parent = findViewById(R.id.constraintParent_layout)
         animBt = findViewById(R.id.animBt_button)
         timer = findViewById<TextView>(R.id.dailyTimer_textView)
@@ -72,24 +66,14 @@ class ActivityAttendance : AppCompatActivity() {
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
         timer.setOnLongClickListener {
-            if (logable) {
+            if (logable)
                 if (timer.text == "长按这段文字进行签到" || timer.text == "签到失败" || timer.text == "0") {
-                }
-//                refreshLogIn(SignAgent.UserStatus.ONLINE)
-                else refreshLogIn(SignAgent.UserStatus.OFFLINE)
-            }
+                } else refreshLogIn(SignAgent.UserStatus.OFFLINE)
             true
         }
 
-        logedin = true
-        refresh()
-        logedin = false
+        refresh(true)
         refresher.start()
-        nbAgent.handleStatus(VDR.userID, Consumer {
-            if (it == SignAgent.UserStatus.ONLINE) {
-                runOnUiThread { animBt.performClick() }
-            }
-        })
 
         animBt.setOnClickListener {
             if (logable) {
@@ -126,6 +110,20 @@ class ActivityAttendance : AppCompatActivity() {
                 animator.start()
             }
         }
+
+        nbAgent.handleStatus(VDR.userID, Consumer {
+            if (it == SignAgent.UserStatus.ONLINE) {
+                if (savedInstanceState != null) {
+                    if (savedInstanceState.getBoolean(VDR.signOutRequestBundleKey))
+                        runOnUiThread { timer.performLongClick() }
+                } else runOnUiThread { animBt.performClick() }
+            } else if (it == SignAgent.UserStatus.OFFLINE) {
+                if (savedInstanceState != null) {
+                    if (savedInstanceState.getBoolean(VDR.signInRequestBundleKey))
+                        runOnUiThread { animBt.performClick() }
+                }
+            }
+        })
     }
 
     private fun refreshLogIn(status: SignAgent.UserStatus) {
@@ -207,8 +205,8 @@ class ActivityAttendance : AppCompatActivity() {
         }
     }
 
-    private fun refresh() {
-        if (!logedin) return
+    private fun refresh(forced: Boolean = false) {
+        if (!forced && !logedin) return
         nbAgent.handleStatus(VDR.userID, Consumer {
             if (it != SignAgent.UserStatus.ONLINE) {
                 runOnUiThread { timer.performLongClick() }

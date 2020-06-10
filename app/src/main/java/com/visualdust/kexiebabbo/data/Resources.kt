@@ -23,6 +23,9 @@ class Resources {
         const val rankTopFiveAttendanceAPIName = "TopFive"
         const val timeAPIName = "getTime"
 
+        const val signInRequestBundleKey = "signInRequest"
+        const val signOutRequestBundleKey = "signOutRequest"
+
         var userID :Long = -266555
     }
 }

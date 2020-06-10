@@ -33,7 +33,6 @@ class SignAgent private constructor() {
         }
     }
 
-
     enum class UserStatus {
         ONLINE, OFFLINE, NETFAILURE
     }
@@ -175,10 +174,8 @@ class SignAgent private constructor() {
                 )
             }
             return attendanceList
-        } catch (ioe: IOException) {
-            throw ioe
         } catch (e: Exception) {
-            throw e
+            return ArrayList()
         }
     }
 
@@ -221,10 +218,8 @@ class SignAgent private constructor() {
                 )
             }
             return topFiveAttendanceList
-        } catch (ioe: IOException) {
-            throw ioe
         } catch (e: Exception) {
-            throw e
+            return ArrayList()
         }
     }
 

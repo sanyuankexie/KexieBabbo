@@ -8,7 +8,7 @@
         android:shortcutShortLabel="@string/signin_shortcut_short_name">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="com.visualdust.kexiebabbo.ActivityAttendance"
+            android:targetClass="com.visualdust.kexiebabbo.shortcuts.SCRequestSignin"
             android:targetPackage="com.visualdust.kexiebabbo" />
         <!-- If your shortcut is associated with multiple intents, include them
              here. The last intent in the list determines what the user sees when
@@ -24,7 +24,7 @@
         android:shortcutShortLabel="@string/signout_shortcut_short_name">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetClass="com.visualdust.kexiebabbo.ActivityAttendance"
+            android:targetClass="com.visualdust.kexiebabbo.shortcuts.SCRequestSignout"
             android:targetPackage="com.visualdust.kexiebabbo" />
         <!-- If your shortcut is associated with multiple intents, include them
              here. The last intent in the list determines what the user sees when
