@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         val button = findViewById<Button>(R.id.startTrial_button)
         val userIDEditText = findViewById<EditText>(R.id.userID_editText)
-        var networkConnected = false
+        var clickable = true
 
         val pref = getSharedPreferences("${VDR.appName}.userID", Context.MODE_PRIVATE)
         val userID = pref.getLong("userID", 0)
@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity() {
             userIDEditText.setText(userID.toString())
 
         button.setOnClickListener {
+            if (!clickable) return@setOnClickListener
+            clickable = false
             try {
                 nbAgent.handleStatus(0L, Consumer {
                     if (SignAgent.UserStatus.NETFAILURE.equals(it))
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity() {
                                 "我好像暂时连不上服务器(っ °Д °;)っ",
                                 Toast.LENGTH_SHORT
                             ).show()
+                            clickable = true
                         }
                     else {
                         val text = userIDEditText.text.toString()
@@ -52,9 +55,11 @@ class MainActivity : AppCompatActivity() {
                             editor.apply()
                             val intent = Intent(this, ActivityAttendance::class.java)
                             startActivity(intent)
+                            clickable = true
                         } else runOnUiThread {
                             Toast.makeText(applicationContext, "你应该输入一个十位的学号", Toast.LENGTH_LONG)
                                 .show()
+                            clickable = true
                         }
                     }
                 })
@@ -63,6 +68,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(applicationContext, "我好像暂时连不上服务器(っ °Д °;)っ", Toast.LENGTH_LONG)
                         .show()
                 }
+                clickable = true
             }
         }
     }

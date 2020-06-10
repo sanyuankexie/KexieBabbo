@@ -54,6 +54,13 @@ class ActivityAttendance : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_attendance)
 
+        if (VDR.userID < 0) {
+            val pref = getSharedPreferences("${VDR.appName}.userID", Context.MODE_PRIVATE)
+            val userID = pref.getLong("userID", 0)
+            if (userID != 0L)
+                VDR.userID = userID
+        }
+
         parent = findViewById(R.id.constraintParent_layout)
         animBt = findViewById(R.id.animBt_button)
         timer = findViewById<TextView>(R.id.dailyTimer_textView)

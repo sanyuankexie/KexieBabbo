@@ -17,6 +17,14 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+    <string name="signin_disabled_message">你还没填写过正确id或你已经签到</string>
+    <string name="signin_shortcut_short_name">签到</string>
+    <string name="signin_shortcut_long_name">签到</string>
+
+    <string name="signout_disabled_message">你似乎还没有签到</string>
+    <string name="signout_shortcut_short_name">签退</string>
+    <string name="signout_shortcut_long_name">签退</string>
+
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 </resources>
