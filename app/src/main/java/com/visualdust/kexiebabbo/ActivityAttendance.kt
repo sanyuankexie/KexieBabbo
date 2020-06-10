@@ -10,6 +10,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.addListener
+import androidx.core.view.children
 import com.visualdust.kexiebabbo.agent.NonblockingSignAgent
 import com.visualdust.kexiebabbo.agent.SignAgent
 import kotlinx.android.synthetic.main.activity_attendance.*
@@ -79,15 +80,6 @@ class ActivityAttendance : AppCompatActivity() {
         refresher.start()
         nbAgent.handleStatus(VDR.userID, Consumer {
             if (it == SignAgent.UserStatus.ONLINE) {
-//                runOnUiThread {
-//                    parent.removeView(animBt)
-//                    timer.alpha = 1F
-//                    attendanceListGridLayout.alpha = 1F
-//                    topFiveListLinearLayout.alpha = 1F
-//                    top_div.setTextColor(getColor(R.color.colorWhitePure))
-//                    bottomBar.alpha = 1F
-//                }
-//                refreshLogIn(SignAgent.UserStatus.ONLINE)
                 runOnUiThread { animBt.performClick() }
             }
         })
@@ -116,6 +108,8 @@ class ActivityAttendance : AppCompatActivity() {
                     ).setDuration(1000)
                         .start()
                 })
+                for (item in attendanceListGridLayout.children)
+                    item.isEnabled = true
                 animator.addListener(onEnd = {
                     runOnUiThread {
                         parent.removeView(animBt)
@@ -160,10 +154,11 @@ class ActivityAttendance : AppCompatActivity() {
                         timer.text = "长按这段文字进行签到"
                         progressBar.progress = 0
                         timeDesrip.text = "本周已签到0分钟，还需要1080分钟"
+                        for (item in attendanceListGridLayout.children)
+                            item.isEnabled = false
 //                        attendanceListGridLayout.removeAllViews()
 //                        topFiveListLinearLayout.removeAllViews()
                         logable = true
-
                     })
                     animator.start()
                 }
@@ -290,7 +285,11 @@ class ActivityAttendance : AppCompatActivity() {
                 bt.setOnClickListener {
                     popupMenu.show()
                 }
-                runOnUiThread { attendanceListGridLayout.addView(bt) }
+                bt.width = (parent.width - 30) / 4
+                runOnUiThread {
+                    attendanceListGridLayout.addView(bt)
+                    if (!logedin) bt.isEnabled = false
+                }
             }
         })
         nbAgent.handleTopFives(Consumer {

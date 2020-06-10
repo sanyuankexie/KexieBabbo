@@ -41,16 +41,14 @@ class MainActivity : AppCompatActivity() {
                         }
                     else {
                         val text = userIDEditText.text.toString()
-                        val editor =
-                            getSharedPreferences(
-                                "${VDR.appName}.userID",
-                                Context.MODE_PRIVATE
-                            ).edit()
-                        editor.putLong("${VDR.appName}.userID", text.toLong())
-                        editor.apply()
                         if (text.length == 10) {
                             VDR.userID = text.toLong()
-                            editor.putLong("userID", text.toLong())
+                            val editor =
+                                getSharedPreferences(
+                                    "${VDR.appName}.userID",
+                                    Context.MODE_PRIVATE
+                                ).edit()
+                            editor.putLong("userID", VDR.userID)
                             editor.apply()
                             val intent = Intent(this, ActivityAttendance::class.java)
                             startActivity(intent)
