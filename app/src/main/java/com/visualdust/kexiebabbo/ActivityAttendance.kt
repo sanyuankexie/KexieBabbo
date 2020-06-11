@@ -1,6 +1,7 @@
 package com.visualdust.kexiebabbo
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -14,28 +15,27 @@ import androidx.core.view.children
 import com.visualdust.kexiebabbo.agent.NonblockingSignAgent
 import com.visualdust.kexiebabbo.agent.SignAgent
 import kotlinx.android.synthetic.main.activity_attendance.*
-import java.lang.Exception
 import java.util.function.Consumer
 import com.visualdust.kexiebabbo.data.Resources as VDR
 
 
 class ActivityAttendance : AppCompatActivity() {
-    val agent = SignAgent.getAgent()
-    val nbAgent = NonblockingSignAgent.getAgent()
-    var logable = true
-    var logedin = false
-    lateinit var parent: ConstraintLayout
-    lateinit var animBt: Button
-    lateinit var timer: TextView
-    lateinit var attendanceListGridLayout: GridLayout
-    lateinit var topFiveListLinearLayout: LinearLayout
-    lateinit var timeDesrip: TextView
-    lateinit var progressBar: ProgressBar
-    lateinit var bottomBar: LinearLayout
-    lateinit var clipboardManager: ClipboardManager
+//    private val agent = SignAgent.getAgent()
+    private val nbAgent = NonblockingSignAgent.getAgent()
+    private var logable = true
+    private var logedin = false
+    private lateinit var parent: ConstraintLayout
+    private lateinit var animBt: Button
+    private lateinit var timer: TextView
+    private lateinit var attendanceListGridLayout: GridLayout
+    private lateinit var topFiveListLinearLayout: LinearLayout
+    private lateinit var timeDesrip: TextView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var bottomBar: LinearLayout
+    private lateinit var clipboardManager: ClipboardManager
 
-    class Refresher(var activity: ActivityAttendance) : Thread() {
-        var flag = true
+    class Refresher(private var activity: ActivityAttendance) : Thread() {
+        private var flag = true
         override fun run() {
             while (true) {
                 if (!flag) return
@@ -57,11 +57,11 @@ class ActivityAttendance : AppCompatActivity() {
 
         parent = findViewById(R.id.constraintParent_layout)
         animBt = findViewById(R.id.animBt_button)
-        timer = findViewById<TextView>(R.id.dailyTimer_textView)
-        attendanceListGridLayout = findViewById<GridLayout>(R.id.attendanceList_gridLayout)
-        topFiveListLinearLayout = findViewById<LinearLayout>(R.id.topFiveList_linearLayout)
-        timeDesrip = findViewById<TextView>(R.id.timeDescrip_textView)
-        progressBar = findViewById<ProgressBar>(R.id.signInTime_ProcessBar)
+        timer = findViewById(R.id.dailyTimer_textView)
+        attendanceListGridLayout = findViewById(R.id.attendanceList_gridLayout)
+        topFiveListLinearLayout = findViewById(R.id.topFiveList_linearLayout)
+        timeDesrip = findViewById(R.id.timeDescrip_textView)
+        progressBar = findViewById(R.id.signInTime_ProcessBar)
         bottomBar = findViewById(R.id.bottom_bar)
         clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
@@ -79,7 +79,7 @@ class ActivityAttendance : AppCompatActivity() {
             if (logable) {
                 logable = false
                 refreshLogIn(SignAgent.UserStatus.ONLINE)
-                var animator = ObjectAnimator.ofFloat(animBt, "alpha", 1f, 0f).setDuration(1000)
+                val animator = ObjectAnimator.ofFloat(animBt, "alpha", 1f, 0f).setDuration(1000)
                 animator.addListener(onStart = {
                     ObjectAnimator.ofFloat(animBt, "rotation", 0f, 180f, 360f).setDuration(1000)
                         .start()
@@ -126,13 +126,14 @@ class ActivityAttendance : AppCompatActivity() {
         })
     }
 
+    @SuppressLint("SetTextI18n")
     private fun refreshLogIn(status: SignAgent.UserStatus) {
         if (status == SignAgent.UserStatus.OFFLINE) {
             logable = false
             nbAgent.handleSignOut(VDR.userID, Consumer {
                 runOnUiThread {
                     parent.addView(animBt)
-                    var animator =
+                    val animator =
                         ObjectAnimator.ofFloat(animBt, "rotation", 360f, 180f, 0f).setDuration(1000)
                     animator.addListener(onStart = {
                         ObjectAnimator.ofFloat(attendanceListGridLayout, "alpha", 1f, 0f)
@@ -179,16 +180,16 @@ class ActivityAttendance : AppCompatActivity() {
                     pos_start = response.indexOf("userid\":") + 8
                     pos_end = response.indexOf(",\"", pos_start)
                     val userid = response.substring(pos_start, pos_end).toLong()
-                    if (response.contains("签到成功"))
-                        runOnUiThread { Toast.makeText(this, "签到成功", Toast.LENGTH_SHORT).show() }
-                    else if (response.contains("成功"))
-                        runOnUiThread { Toast.makeText(this, "签退成功", Toast.LENGTH_SHORT).show() }
-                    else runOnUiThread {
-                        Toast.makeText(
-                            this,
-                            "操作失败 : $response",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    when {
+                        response.contains("签到成功") -> runOnUiThread { Toast.makeText(this, "签到成功", Toast.LENGTH_SHORT).show() }
+                        response.contains("成功") -> runOnUiThread { Toast.makeText(this, "签退成功", Toast.LENGTH_SHORT).show() }
+                        else -> runOnUiThread {
+                            Toast.makeText(
+                                this,
+                                "操作失败 : $response",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                     nbAgent.handleTime(userid, Consumer {
                         runOnUiThread {
@@ -212,11 +213,12 @@ class ActivityAttendance : AppCompatActivity() {
                 runOnUiThread { timer.performLongClick() }
             }
         })
-        nbAgent.handleAttendance(Consumer {
+        nbAgent.handleAttendance(Consumer { it ->
             runOnUiThread { attendanceListGridLayout.removeAllViews() }
-            for (member in it!!.sortedWith(compareBy({ -it.time }))) {
+            if (null == it || it.isEmpty()) return@Consumer
+            for (member in it.sortedWith(compareBy { -it.time })) {
                 val bt = Button(this)
-                bt.setText(member.name)
+                bt.text = member.name
                 val popupMenu = PopupMenu(this, bt)
                 val menu = popupMenu.menu
                 menu.add(Menu.NONE, Menu.FIRST + 0, 0, "ID : ${member.id}")
@@ -299,10 +301,11 @@ class ActivityAttendance : AppCompatActivity() {
         })
         nbAgent.handleTopFives(Consumer {
             runOnUiThread { topFiveListLinearLayout.removeAllViews() }
-            for (ranker in it!!) {
+            if (null == it || it.isEmpty()) return@Consumer
+            for (ranker in it) {
                 val bt = Button(this)
                 bt.setTextColor(getColor(R.color.colorAccent))
-                bt.setText("${ranker.name} ${ranker.time.toInt()}分钟")
+                bt.text = "${ranker.name} ${ranker.time.toInt()}分钟"
                 runOnUiThread { topFiveListLinearLayout.addView(bt) }
             }
         })
