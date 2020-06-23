@@ -10,7 +10,11 @@ import java.lang.Exception
 import com.visualdust.kexiebabbo.data.Resources as R
 
 class SignAgent private constructor() {
-    private val client = OkHttpClient()
+    val httpAgent = HttpAgent.getAgent()
+
+    enum class UserStatus {
+        ONLINE, OFFLINE, NETFAILURE
+    }
 
     class Attendance(
         var dept: String,
@@ -24,30 +28,12 @@ class SignAgent private constructor() {
         }
     }
 
-    class timeList(
-        var id: Long,
-        var alltime: Double = 0.0
-    ) {
-        override fun toString(): String {
-            return "[userId]$id,[alltime]$alltime"
-        }
-    }
-
-    enum class UserStatus {
-        ONLINE, OFFLINE, NETFAILURE
-    }
-
-    private fun post(url: String, body: String): Response? = client.newCall(
-        Request.Builder().url(url).post(body.toRequestBody(R.JsonType)).build()
-    ).execute()
-
-    private fun get(url: String): Response? = client.newCall(
-        Request.Builder().url(url).get().build()
-    ).execute()
-
     fun postSignIn(id: Long): Response? {
         try {
-            return post(R.serviceAddress + R.div + R.signInAPIName, "{\"userId\":\"$id\"}")
+            return httpAgent.post(
+                R.serviceAddress + R.div + R.signInAPIName,
+                "{\"userId\":\"$id\"}"
+            )
         } catch (ioe: IOException) {
             throw ioe
         } catch (e: Exception) {
@@ -68,7 +54,10 @@ class SignAgent private constructor() {
 
     fun postSignOut(id: Long): Response? {
         try {
-            return post(R.serviceAddress + R.div + R.signOutAPIName, "{\"userId\":\"$id\"}")
+            return httpAgent.post(
+                R.serviceAddress + R.div + R.signOutAPIName,
+                "{\"userId\":\"$id\"}"
+            )
         } catch (ioe: IOException) {
             throw ioe
         } catch (e: Exception) {
@@ -89,7 +78,10 @@ class SignAgent private constructor() {
 
     fun postComplaint(id: Long): Response? {
         try {
-            return post(R.serviceAddress + R.div + R.complaintAPIName, "{\"userId\":\"$id\"}")
+            return httpAgent.post(
+                R.serviceAddress + R.div + R.complaintAPIName,
+                "{\"userId\":\"$id\"}"
+            )
         } catch (ioe: IOException) {
             throw ioe
         } catch (e: Exception) {
@@ -110,7 +102,7 @@ class SignAgent private constructor() {
 
     private fun getAttendancesResponse(): Response? {
         try {
-            return get(R.serviceAddress + R.div + R.attendancesListAPIName)
+            return httpAgent.get(R.serviceAddress + R.div + R.attendancesListAPIName)
         } catch (ioe: IOException) {
             throw ioe
         } catch (e: Exception) {
@@ -120,7 +112,7 @@ class SignAgent private constructor() {
 
     private fun getTopFiveAttendancesResponse(): Response? {
         try {
-            return get(R.serviceAddress + R.div + R.rankTopFiveAttendanceAPIName)
+            return httpAgent.get(R.serviceAddress + R.div + R.rankTopFiveAttendanceAPIName)
         } catch (ioe: IOException) {
             throw ioe
         } catch (e: Exception) {
@@ -130,7 +122,7 @@ class SignAgent private constructor() {
 
     private fun getTimeResponse(id: Long): Response? {
         try {
-            return get(R.serviceAddress + R.div + R.timeAPIName + "?userId=${id}")
+            return httpAgent.get(R.serviceAddress + R.div + R.timeAPIName + "?userId=${id}")
         } catch (ioe: IOException) {
             throw ioe
         } catch (e: Exception) {

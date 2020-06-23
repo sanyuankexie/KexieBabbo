@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.widget.*
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.animation.addListener
 import androidx.core.view.children
+import androidx.core.view.contains
 import com.visualdust.kexiebabbo.agent.NonblockingSignAgent
 import com.visualdust.kexiebabbo.agent.SignAgent
 import kotlinx.android.synthetic.main.activity_attendance.*
@@ -20,7 +22,7 @@ import com.visualdust.kexiebabbo.data.Resources as VDR
 
 
 class ActivityAttendance : AppCompatActivity() {
-//    private val agent = SignAgent.getAgent()
+    //    private val agent = SignAgent.getAgent()
     private val nbAgent = NonblockingSignAgent.getAgent()
     private var logable = true
     private var logedin = false
@@ -54,7 +56,7 @@ class ActivityAttendance : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_attendance)
-
+        println(savedInstanceState)
         parent = findViewById(R.id.constraintParent_layout)
         animBt = findViewById(R.id.animBt_button)
         timer = findViewById(R.id.dailyTimer_textView)
@@ -111,28 +113,25 @@ class ActivityAttendance : AppCompatActivity() {
             }
         }
 
+        val intent = getIntent()
         nbAgent.handleStatus(VDR.userID, Consumer {
-            if (it == SignAgent.UserStatus.ONLINE) {
-                if (savedInstanceState != null) {
-                    if (savedInstanceState.getBoolean(VDR.signOutRequestBundleKey))
-                        runOnUiThread { timer.performLongClick() }
-                } else runOnUiThread { animBt.performClick() }
-            } else if (it == SignAgent.UserStatus.OFFLINE) {
-                if (savedInstanceState != null) {
-                    if (savedInstanceState.getBoolean(VDR.signInRequestBundleKey))
-                        runOnUiThread { animBt.performClick() }
-                }
-            }
+            val signInSC = intent.getBooleanExtra(VDR.signInRequestBundleKey, false)
+            val signOutSC = intent.getBooleanExtra(VDR.signOutRequestBundleKey, false)
+            if (it == SignAgent.UserStatus.OFFLINE && signInSC)
+                runOnUiThread { animBt.performClick() }
+            else if (it == SignAgent.UserStatus.ONLINE && signOutSC)
+                refreshLogIn(SignAgent.UserStatus.OFFLINE)
+            else if (it == SignAgent.UserStatus.ONLINE) runOnUiThread { animBt.performClick() }
         })
     }
 
-    @SuppressLint("SetTextI18n")
     private fun refreshLogIn(status: SignAgent.UserStatus) {
         if (status == SignAgent.UserStatus.OFFLINE) {
             logable = false
             nbAgent.handleSignOut(VDR.userID, Consumer {
                 runOnUiThread {
-                    parent.addView(animBt)
+                    if (!parent.contains(animBt))
+                        parent.addView(animBt)
                     val animator =
                         ObjectAnimator.ofFloat(animBt, "rotation", 360f, 180f, 0f).setDuration(1000)
                     animator.addListener(onStart = {
@@ -181,8 +180,20 @@ class ActivityAttendance : AppCompatActivity() {
                     pos_end = response.indexOf(",\"", pos_start)
                     val userid = response.substring(pos_start, pos_end).toLong()
                     when {
-                        response.contains("签到成功") -> runOnUiThread { Toast.makeText(this, "签到成功", Toast.LENGTH_SHORT).show() }
-                        response.contains("成功") -> runOnUiThread { Toast.makeText(this, "签退成功", Toast.LENGTH_SHORT).show() }
+                        response.contains("签到成功") -> runOnUiThread {
+                            Toast.makeText(
+                                this,
+                                "签到成功",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        response.contains("成功") -> runOnUiThread {
+                            Toast.makeText(
+                                this,
+                                "签退成功",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                         else -> runOnUiThread {
                             Toast.makeText(
                                 this,

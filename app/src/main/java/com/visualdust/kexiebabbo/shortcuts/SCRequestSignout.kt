@@ -21,14 +21,17 @@ class SCRequestSignout : AppCompatActivity() {
                 VDR.userID = userID
         }
         if (VDR.userID > 0L) {
-            val bundle = Bundle()
-            bundle.putBoolean(VDR.signOutRequestBundleKey, true)
-            bundle.putBoolean(VDR.signInRequestBundleKey, false)
+//            val bundle = Bundle()
+//            bundle.putBoolean(VDR.signOutRequestBundleKey, true)
+//            bundle.putBoolean(VDR.signInRequestBundleKey, false)
             val intent = Intent(this, ActivityAttendance::class.java)
-            startActivity(intent, bundle)
+            intent.putExtra(VDR.signOutRequestBundleKey, true)
+            intent.putExtra(VDR.signInRequestBundleKey, false)
+            startActivity(intent)
         } else {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
+        finish()
     }
 }

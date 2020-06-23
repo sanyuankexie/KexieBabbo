@@ -22,10 +22,12 @@ class Resources {
         const val attendancesListAPIName = ""
         const val rankTopFiveAttendanceAPIName = "TopFive"
         const val timeAPIName = "getTime"
-
         const val signInRequestBundleKey = "signInRequest"
         const val signOutRequestBundleKey = "signOutRequest"
+        const val requestInterveneAPIName = "requestIntervene"
+        const val changeInterveneStatusAPIName = "interveneStatus"
+        const val removeIntervenePAIName = "removeIntervene"
 
-        var userID :Long = -266555
+        var userID: Long = -266555
     }
 }
